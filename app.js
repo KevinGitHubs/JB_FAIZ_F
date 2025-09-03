@@ -1,5 +1,6 @@
 import { supabaseClient } from './supabase.js';
-const ADMIN_WA = '6281312345678'; // <-- ganti nomor kamu
+const ADMIN_WA = '6288218776877'; // <-- nomor baru
+
 let products = [];
 
 const toggleBtn = document.getElementById('themeToggle');
@@ -68,5 +69,23 @@ document.querySelectorAll('.filter').forEach(btn => {
     load(btn.dataset.cat);
   };
 });
+
+// Admin modal
+const modal = document.getElementById('adminModal');
+const adminBtn = document.getElementById('adminBtn');
+const closeModal = document.querySelector('.close');
+
+adminBtn.onclick = () => modal.style.display = 'flex';
+closeModal.onclick = () => modal.style.display = 'none';
+window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+
+window.checkAdmin = () => {
+  if (document.getElementById('adminPass').value === 'JBF827') {
+    modal.style.display = 'none';
+    location.href = '/admin';
+  } else {
+    alert('Password salah!');
+  }
+};
 
 load();
