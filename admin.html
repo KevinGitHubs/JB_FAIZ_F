@@ -2,22 +2,20 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8"/>
-  <title>Admin – JB Store</title>
+  <title>Admin – Faiz_F JB Store</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <link rel="icon" href="assets/favicon.ico"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <!-- PIN Gate -->
   <div id="adminPin">
     <div class="pin-box">
       <h2>Admin Login</h2>
-      <input id="pinInput" type="password" placeholder="PIN (1234)" maxlength="4"/>
+      <input id="pinInput" type="password" placeholder="Password" maxlength="6"/>
       <button onclick="checkPin()">Masuk</button>
     </div>
   </div>
 
-  <!-- Panel Admin -->
   <div id="adminPanel" style="display:none">
     <h1>Admin Panel</h1>
     <form id="addForm">
@@ -46,11 +44,11 @@
 
   <script>
     function checkPin() {
-      if (document.getElementById('pinInput').value === '1234') {
+      if (document.getElementById('pinInput').value === 'JBF827') {
         document.getElementById('adminPin').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
       } else {
-        alert('PIN salah!');
+        alert('Password salah!');
       }
     }
   </script>
