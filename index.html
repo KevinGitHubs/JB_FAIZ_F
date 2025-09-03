@@ -10,8 +10,12 @@
 </head>
 <body>
   <button id="themeToggle" aria-label="Toggle theme">
-    <img id="themeIcon" src="assets/moon.svg" width="20"/>
+    <!-- Icon awal (moon) -->
+    <svg width="20" height="20" fill="#000" viewBox="0 0 24 24">
+      <path id="themeIconPath" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c.44-.06.9-.1 1.36-.1z"/>
+    </svg>
   </button>
+
   <header>
     <h1 class="logo">JB <span>Store</span></h1>
     <nav>
@@ -21,10 +25,13 @@
       <button class="filter" data-cat="GAG">Grow A Garden</button>
     </nav>
   </header>
+
   <main id="catalog"><div class="skeleton-grid"></div></main>
-  <a id="waFloat" href="https://wa.me/6288218776877?text=Halo%20JB%20Store" target="_blank">
+
+  <a id="waFloat" href="https://wa.me/6281312345678?text=Halo%20JB%20Store" target="_blank">
     <svg fill="#fff" width="24" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm5.4 13.8c-.2.5-1 .8-2.1 1.4-1 .6-2.2.9-3.3.9-2.8 0-5.1-1.8-5.9-4.3-.4-1.3-.2-2.6.4-3.7.2-.5 1-.8 2.1-1.4 1-.6 2.2-.9 3.3-.9 2.8 0 5.1 1.8 5.9 4.3.4 1.3.2 2.6-.4 3.7z"/></svg>
   </a>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="app.js"></script>
 </body>
