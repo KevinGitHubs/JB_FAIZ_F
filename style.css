@@ -33,10 +33,10 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: var(--font);
 }
 
 body {
-  font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
@@ -65,7 +65,7 @@ body {
 .sphere-1 {
   width: 500px;
   height: 500px;
-  background: linear-gradient(135deg, #ff4757, #ff3838);
+  background: linear-gradient(135deg, var(--primary), #ff3838);
   top: -250px;
   left: -250px;
 }
@@ -73,7 +73,7 @@ body {
 .sphere-2 {
   width: 400px;
   height: 400px;
-  background: linear-gradient(135deg, #2ed573, #7bed9f);
+  background: linear-gradient(135deg, var(--secondary), #7bed9f);
   bottom: -200px;
   right: -200px;
   animation-delay: -5s;
@@ -136,21 +136,18 @@ header {
   margin-top: -0.5rem;
 }
 
-.admin-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--text);
-  font-size: 1.2rem;
-  padding: 0.75rem;
-  border-radius: 50%;
+/* Admin Area */
+.admin-area {
+  width: 40px;
+  height: 40px;
+  background: transparent;
   cursor: pointer;
   transition: var(--transition);
-  backdrop-filter: blur(10px);
+  border-radius: 50%;
 }
 
-.admin-btn:hover {
-  background: var(--primary);
-  transform: scale(1.1);
+.admin-area:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Theme Toggle */
@@ -618,38 +615,50 @@ header {
   transform: scale(1.2);
 }
 
+/* Animasi Card */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1rem;
   }
-  
+
   header {
     padding: 1rem 5%;
   }
-  
+
   .logo {
     font-size: 2rem;
   }
-  
+
   #waFloat {
     bottom: 1rem;
     right: 1rem;
     padding: 0.75rem 1rem;
   }
-  
+
   .wa-text {
     display: none;
   }
-  
+
   .category-nav {
     padding: 0 1rem;
   }
-  
+
   .filter {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
