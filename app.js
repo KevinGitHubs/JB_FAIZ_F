@@ -1,71 +1,154 @@
 import { supabaseClient } from './supabase.js';
-const ADMIN_WA = '6288218776877'; // <-- nomor baru
+const ADMIN_WA = '6288218776877';
 
 let products = [];
+let currentSearch = '';
 
-const toggleBtn = document.getElementById('themeToggle');
-const icon = document.getElementById('themeIconPath');
+// Theme Toggle dengan animasi smooth
+const themeToggle = document.getElementById('themeToggle');
+const sunIcon = document.querySelector('.fa-sun');
+const moonIcon = document.querySelector('.fa-moon');
 
-toggleBtn.onclick = () => {
-  const dark = document.documentElement.getAttribute('data-theme') !== 'dark';
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-  icon.setAttribute('d', dark
-    ? 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 18a1 1 0 0 1-1-1v-2a1 1 0 0 1 2 0v2a1 1 0 0 1-1 1zM5.636 6.636a1 1 0 0 1 1.414-1.414l1.414 1.414a1 1 0 1 1-1.414 1.414L5.636 6.636zm11.314 11.314a1 1 0 0 1 1.414-1.414l1.414 1.414a1 1 0 0 1-1.414 1.414l-1.414-1.414z'
-    : 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c.44-.06.9-.1 1.36-.1z');
-  localStorage.setItem('theme', dark ? 'dark' : 'light');
+themeToggle.onclick = () => {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  
+  if (isDark) {
+    sunIcon.style.opacity = '0';
+    moonIcon.style.opacity = '1';
+  } else {
+    sunIcon.style.opacity = '1';
+    moonIcon.style.opacity = '0';
+  }
+  
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
 };
+
+// Initialize theme
 if (localStorage.getItem('theme') === 'dark') {
   document.documentElement.setAttribute('data-theme', 'dark');
-  icon.setAttribute('d', 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 18a1 1 0 0 1-1-1v-2a1 1 0 0 1 2 0v2a1 1 0 0 1-1 1zM5.636 6.636a1 1 0 0 1 1.414-1.414l1.414 1.414a1 1 0 1 1-1.414 1.414L5.636 6.636zm11.314 11.314a1 1 0 0 1 1.414-1.414l1.414 1.414a1 1 0 0 1-1.414 1.414l-1.414-1.414z');
+  sunIcon.style.opacity = '0';
+  moonIcon.style.opacity = '1';
 }
 
-async function load(cat = 'all') {
-  let q = supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-  if (cat !== 'all') q = q.eq('cat', cat);
-  const { data } = await q;
-  products = data || [];
-  render(cat);
+// Loading animation
+function showLoading() {
+  document.getElementById('catalog').innerHTML = `
+    <div class="loading-animation">
+      <div class="loading-spinner"></div>
+      <p>Memuat produk...</p>
+    </div>
+  `;
 }
-function render(cat) {
-  const list = products.filter(p => cat === 'all' || p.cat === cat);
+
+// Update render function
+function render(cat, search = '') {
+  let list = products.filter(p => cat === 'all' || p.cat === cat);
+  
+  if (search) {
+    list = list.filter(p => 
+      p.nama.toLowerCase().includes(search.toLowerCase()) ||
+      p.cat.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+  
   if (list.length === 0) {
     document.getElementById('catalog').innerHTML = `
       <div class="empty-box">
-        <h2>Aduh Belum Ada Stock Ni Brayy</h2>
-        <p>Silakan kembali lagi nanti atau hubungi admin.</p>
+        <h2>${search ? 'Produk tidak ditemukan' : 'Belum ada produk'}</h2>
+        <p>${search ? 'Coba kata kunci lain' : 'Produk akan segera ditambahkan'}</p>
       </div>
     `;
     return;
   }
-  const html = list.map(p => `
-    <div class="card">
-      <img src="${p.thumb}" alt="${p.nama}">
+  
+  const html = list.map((p, index) => `
+    <div class="card" style="animation-delay: ${index * 0.1}s">
+      <img src="${p.thumb}" alt="${p.nama}" loading="lazy">
       <div class="card-body">
         <h3>${p.nama}</h3>
         <span class="stok-badge">Stok ${p.stok}</span>
-        <p>Kategori: ${p.cat}</p>
+        <p>Kategori: ${getCategoryName(p.cat)}</p>
         <p><strong>Rp${p.harga.toLocaleString()}</strong></p>
-        <button onclick="order('${p.id}')">Beli via WhatsApp</button>
+        <button onclick="order('${p.id}')" class="order-btn">
+          <i class="fab fa-whatsapp"></i>
+          Beli via WhatsApp
+        </button>
       </div>
     </div>
   `).join('');
+  
   document.getElementById('catalog').innerHTML = html;
+  
+  // Add animation to cards
+  const cards = document.querySelectorAll('.card');
+  cards.forEach((card, index) => {
+    card.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
+  });
 }
+
+// Add CSS animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+document.head.appendChild(style);
+
+function getCategoryName(cat) {
+  const names = {
+    'FF': 'Free Fire',
+    'ML': 'Mobile Legends',
+    'RB': 'Roblox',
+    'LAIN': 'Lainnya'
+  };
+  return names[cat] || cat;
+}
+
+// Update order function
 window.order = id => {
   const p = products.find(x => x.id === id);
-  const text = `Halo, saya mau beli:
-- Nama: ${p.nama}
-- Kategori: ${p.cat}
-- Stok: ${p.stok}
-- Harga: Rp${p.harga.toLocaleString()}
-- Link: ${location.origin}?ref=${p.id}`;
-  open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(text)}`);
+  const text = `Halo Faiz_F JB Store, saya mau beli:
+  
+📦 Produk: ${p.nama}
+🎮 Kategori: ${getCategoryName(p.cat)}
+📊 Stok: ${p.stok}
+💰 Harga: Rp${p.harga.toLocaleString()}
+🔗 Link: ${location.origin}?ref=${p.id}`;
+  
+  window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(text)}`);
 };
 
+// Search functionality
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+
+function performSearch() {
+  currentSearch = searchInput.value.trim();
+  const activeCat = document.querySelector('.filter.active').dataset.cat;
+  render(activeCat, currentSearch);
+}
+
+searchBtn.onclick = performSearch;
+searchInput.onkeyup = (e) => {
+  if (e.key === 'Enter') performSearch();
+};
+
+// Filter buttons
 document.querySelectorAll('.filter').forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    currentSearch = '';
+    searchInput.value = '';
     load(btn.dataset.cat);
   };
 });
@@ -84,8 +167,33 @@ window.checkAdmin = () => {
     modal.style.display = 'none';
     location.href = '/admin';
   } else {
-    alert('Password salah!');
+    // Error animation
+    const input = document.getElementById('adminPass');
+    input.style.animation = 'shake 0.5s';
+    setTimeout(() => input.style.animation = '', 500);
   }
 };
 
+// Add shake animation
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+`;
+document.head.appendChild(shakeStyle);
+
+// Load products
+async function load(cat = 'all') {
+  showLoading();
+  let q = supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+  if (cat !== 'all') q = q.eq('cat', cat);
+  const { data } = await q;
+  products = data || [];
+  render(cat);
+}
+
+// Initial load
 load();
